@@ -30,5 +30,39 @@ entity clk_and_reset is
 end entity;
 
 architecture rtl of clk_and_reset is
+  signal sys_clk : bit1;
+  signal rst_sync : bit1;
+  signal rst_async : bit1;
+
+  signal wb_clk : bit1;
+  
 begin
+  sys_clk <= sys_clk_pad_i;
+  rst_async <= rst_pad_i;
+  
+  Wb_clk_gen : process (sys_clk, rst_sync)
+  begin
+    if (rst_sync = '1') then
+      wb_clk <= '0';
+    elsif (rising_edge(sys_clk)) then
+      wb_clk <= not wb_clk;
+    end if;
+  end process;
+
+  rst_gen_block : block
+    signal rst_sync_meta : bit1;
+    signal rst_sync_ff   : bit1;
+  begin
+    sys_clk_rst_gen : process (sys_clk, rst_async)
+    begin
+      if (rst_async = '1') then
+        rst_sync_meta <= '1';
+        rst_sync_ff   <= '1';
+      elsif (rising_edge(sys_clk)) then
+        rst_sync_meta <= rst_async;
+        rst_sync_ff   <= rst_sync_meta;
+      end if;
+    end process;
+  end block;
+
 end architecture rtl;
