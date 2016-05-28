@@ -41,20 +41,20 @@ architecture rtl of clk_and_reset is
 begin
   sys_clk_100_MHz <= sys_clk_pad_i;
   sdram_clk_o     <= sys_clk_100_MHz;
+  --
   tc_clk_o        <= tc_clk_i;
-  eth_clk_o       <= eth_clk_pad_i;
   dbg_tck_o       <= tck_pad_i;
   --
+  eth_clk_o       <= eth_clk_pad_i;
   eth_rst_o       <= wb_rst_sync_50_MHz;
   eth0_phy_rst_n  <= not wb_rst_sync_50_MHz;
   --
   rst_async       <= rst_pad_i;
-
-
-  sys_rst_o <= rst_sync_100_MHz;
   --
-  wb_clk_o  <= wb_clk_50_MHz;
-  wb_rst_o  <= wb_rst_sync_50_MHz;
+  wb_clk_o        <= wb_clk_50_MHz;
+  wb_rst_o        <= wb_rst_sync_50_MHz;
+  --
+  sys_rst_o       <= rst_sync_100_MHz;
   
   wb_clk_50_MHz_gen : process (sys_clk_100_MHz, rst_sync_100_MHz)
   begin
