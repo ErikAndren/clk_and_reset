@@ -69,7 +69,7 @@ begin
   end process;
   
   soft_reset <= '0', '1' after 200 ns, '0' after 300 ns;
-  rst <= '1', '0' after 100 ns;
+  rst <= '1', '0' after 100 ns, '1' after 437 ns, '0' after 499 ns;
 
   dut : entity work.clk_and_reset
     port map (
