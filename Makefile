@@ -1,5 +1,6 @@
 FILES = \
-	clk_and_reset.vhd
+	clk_and_reset.vhd \
+	tb.vhd
 
 QUARTUS_PATH=/opt/altera/13.0sp1/quartus
 
@@ -13,7 +14,7 @@ TBTOP=tb
 TB_TASK_FILE=simulation/run_tb.tcl
 VSIM_ARGS=-novopt -t 1ps -lib $(WORK_DIR) -do $(TB_TASK_FILE)
 
-MODELSIMINI_PATH=/home/erik/Development/FPGA/AAC_ClkGen/modelsim.ini
+MODELSIMINI_PATH=./modelsim.ini
 CC=vcom
 FLAGS=-work /tmp/work -93 -modelsimini $(MODELSIMINI_PATH)
 
