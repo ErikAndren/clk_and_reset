@@ -18,7 +18,8 @@ entity clk_and_reset is
         dbg_tck_o      : out bit1;
         --
         wb_clk_o       : out bit1;
-        wb_rst_o       : out bit1;
+        wb_rst_lvl1_o  : out bit1;
+        wb_rst_lvl2_o  : out bit1;
         --
         eth_clk_o      : out bit1;
         eth_rst_o      : out bit1;
@@ -31,12 +32,13 @@ entity clk_and_reset is
 end entity;
 
 architecture rtl of clk_and_reset is
-  signal sys_clk_100_MHz    : bit1;
-  signal rst_sync_100_MHz   : bit1;
-  signal rst_async          : bit1;
+  signal sys_clk_100_MHz         : bit1;
+  signal rst_sync_100_MHz        : bit1;
+  signal rst_async               : bit1;
   --
-  signal wb_clk_50_MHz      : bit1;
-  signal wb_rst_sync_50_MHz : bit1;
+  signal wb_clk_50_MHz           : bit1;
+  signal wb_rst_sync_50_MHz      : bit1;
+  signal wb_rst_soft_sync_50_MHz : bit1;
   
 begin
   sys_clk_100_MHz <= sys_clk_pad_i;
@@ -52,7 +54,8 @@ begin
   rst_async       <= rst_pad_i;
   --
   wb_clk_o        <= wb_clk_50_MHz;
-  wb_rst_o        <= wb_rst_sync_50_MHz;
+  wb_rst_lvl1_o   <= wb_rst_sync_50_MHz;
+  wb_rst_lvl2_o   <= wb_rst_soft_sync_50_MHz;
   --
   sys_rst_o       <= rst_sync_100_MHz;
   
@@ -96,5 +99,18 @@ begin
       end if;
     end process;
     wb_rst_sync_50_MHz <= wb_rst_sync_50_MHz_ff;
+    
+    wb_soft_reset_gen : process (wb_clk_50_MHz, wb_rst_sync_50_MHz)
+    begin
+      if (wb_rst_sync_50_MHz = '1') then
+        wb_rst_soft_sync_50_MHz <= '1';
+      elsif rising_edge(wb_clk_50_MHz) then
+        if (soft_reset_i = '1') then
+          wb_rst_soft_sync_50_MHz <= '1';
+        else
+          wb_rst_soft_sync_50_MHz <= wb_rst_sync_50_MHz;
+        end if;
+      end if;
+    end process;
   end block;
 end architecture rtl;
